@@ -54,7 +54,7 @@ def view_company_by_id(request, company_id):
 class CompanyViewSet(viewsets.ModelViewSet):
     """
     A viewset for viewing and editing company instances.
-    Accessible to Admin and Manager roles only.
+    Accessible to Admin roles only.
     """
     queryset = models.Company.objects.all()
     serializer_class = serializers.CompanySerializer
