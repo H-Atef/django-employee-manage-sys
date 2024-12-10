@@ -55,7 +55,6 @@ class CustomJWTAuthentication(JWTAuthentication):
 
         except Exception as e:
             # Catch any other unexpected errors and log them
-            # You can replace this with actual logging if required
-            print(f"Unexpected error in authentication: {e}")
+            # print(f"Unexpected error in authentication: {e}")
             raise AuthenticationFailed('Authentication failed due to unexpected error.')
 
