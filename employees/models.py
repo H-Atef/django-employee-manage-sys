@@ -11,10 +11,7 @@ STATUS_CHOICES = [
     ('On Leave', 'On Leave'),
     ('Terminated', 'Terminated'),
 ]
-STATUS_VALID_TRANSITIONS = {
-    'Application Received': ['Interview Scheduled', 'Not Accepted'],
-    'Interview Scheduled': ['Hired', 'Not Accepted'],
-}
+
 
 
 class Employee(models.Model):

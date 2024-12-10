@@ -8,6 +8,12 @@ class Company(models.Model):
 
     def save(self,*args,**kwargs):
         self.num_of_departments=self.departments.count()
+        self.num_of_employees=self.employees.count()
         super().save(*args, **kwargs)
 
+    
 
+
+    class Meta:
+        verbose_name="Company"
+        verbose_name_plural="Companies"
