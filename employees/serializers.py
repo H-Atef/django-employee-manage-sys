@@ -5,7 +5,8 @@ from . import models
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Employee
-        fields = '__all__'
+        exclude = ['id'] 
+
 
     def validate(self, data):
         # Ensure the department belongs to the selected company

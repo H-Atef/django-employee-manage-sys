@@ -88,11 +88,11 @@ class AdminStrategy(UserStrategy):
         except Exception as e:
             return Response({"error": f"Employee Update Process Failed! {e}"}, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request, pk=None):
+    def get(self, request, user_id=None):
         """Admin can retrieve any employee"""
-        if pk:
+        if user_id:
             try:
-                employee = Employee.objects.get(pk=pk)
+                employee = Employee.objects.get(user=user_id)
                 serializer = EmployeeSerializer(employee)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             except Employee.DoesNotExist:
@@ -101,20 +101,28 @@ class AdminStrategy(UserStrategy):
         serializer = EmployeeSerializer(employees, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, pk):
+    def put(self, request, user_id):
         """Admin can update any employee"""
         try:
-            employee = Employee.objects.get(pk=pk)
-            old_email = employee.email
+            employee = Employee.objects.get(user=user_id)
         except Employee.DoesNotExist:
             return Response({"detail": "Employee not found."}, status=status.HTTP_404_NOT_FOUND)
 
         # Update email if it's changed
         new_email = request.data.get("email", None)
-        if new_email and (old_email != new_email):
-            user = EmployeeHelper.update_user_email(old_email, new_email)
-            if not user:
-                return Response({"detail": "User email not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if not User.objects.filter(email=new_email).exists():
+        # Check if the email is provided and if it's different from the current user's email
+            if new_email and new_email != employee.user.user.email:
+                # Update the user's email if it's different
+                employee.user.user.email = new_email
+                employee.user.user.save()  # Save the user after email update
+        
+        else:
+            request.data["email"]=employee.user.user.email
+       
+    
+      
         
         serializer = EmployeeSerializer(employee, data=request.data, partial=True)
         if serializer.is_valid():
@@ -122,10 +130,10 @@ class AdminStrategy(UserStrategy):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk):
+    def delete(self, request, user_id):
         """Admin can delete any employee"""
         try:
-            employee = User.objects.get(pk=pk)
+            employee = User.objects.get(user=user_id) 
             employee.delete()
             return Response({"detail": "Employee deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
         except Employee.DoesNotExist:

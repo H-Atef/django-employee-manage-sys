@@ -18,7 +18,7 @@ class EmployeeHelper:
         ]
         
         # Create a dictionary from request.data using the model fields
-        employee_data = {field: request.data.get(field) for field in employee_fields}
+        employee_data = {field: request.data.get(field,None) for field in employee_fields}
         
         # If 'hired_on' is not in request data, set it to today's date
         employee_data['hired_on'] = request.data.get('hired_on', date.today())
@@ -70,17 +70,6 @@ class EmployeeHelper:
         except Exception as e:
             return {"error": f"User Info Creation Process Failed! {e}"}
 
-    @staticmethod
-    def update_user_email(old_email, new_email):
-        """Update user's email if it changes"""
-        try:
-            user = User.objects.get(email=old_email)
-            user.email = new_email
-            user.save()
-            return user
-        except User.DoesNotExist:
-            return None
-        
     
     @staticmethod
     def check_if_user_exists(email):

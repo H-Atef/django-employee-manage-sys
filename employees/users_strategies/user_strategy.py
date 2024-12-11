@@ -6,17 +6,17 @@ class UserStrategy(ABC):
         pass
 
     @abstractmethod
-    def get(self, request, pk=None):
+    def get(self, request, user_id=None):
         pass
 
     @abstractmethod
-    def put(self, request, pk):
+    def put(self, request, user_id):
         pass
 
     @abstractmethod
-    def delete(self, request, pk):
+    def delete(self, request, user_id):
         pass
 
     @abstractmethod
-    def get_profile(self, request, pk):
+    def get_profile(self, request, user_id):
         pass

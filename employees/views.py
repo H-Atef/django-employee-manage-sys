@@ -20,39 +20,39 @@ class CreateEmployeeAPIView(APIView):
 class RetrieveEmployeeAPIView(APIView):
     authentication_classes = [CustomJWTAuthentication]
 
-    def get(self, request, pk=None):
+    def get(self, request, user_id=None):
         user_role = request.user.userinfo.role
         role_context = RoleContext(user_role)
         strategy = role_context.get_strategy()
 
         if strategy:
-            return strategy.get(request, pk)
+            return strategy.get(request, user_id)
         else:
             return Response({"detail": "Permission Denied."}, status=status.HTTP_403_FORBIDDEN)
 
 class UpdateEmployeeAPIView(APIView):
     authentication_classes = [CustomJWTAuthentication]
 
-    def put(self, request, pk):
+    def put(self, request, user_id):
         user_role = request.user.userinfo.role
         role_context = RoleContext(user_role)
         strategy = role_context.get_strategy()
 
         if strategy:
-            return strategy.put(request, pk)
+            return strategy.put(request, user_id)
         else:
             return Response({"detail": "Permission Denied."}, status=status.HTTP_403_FORBIDDEN)
 
 class DeleteEmployeeAPIView(APIView):
     authentication_classes = [CustomJWTAuthentication]
 
-    def delete(self, request, pk):
+    def delete(self, request, user_id):
         user_role = request.user.userinfo.role
         role_context = RoleContext(user_role)
         strategy = role_context.get_strategy()
 
         if strategy:
-            return strategy.delete(request, pk)
+            return strategy.delete(request, user_id)
         else:
             return Response({"detail": "Permission Denied."}, status=status.HTTP_403_FORBIDDEN)
 

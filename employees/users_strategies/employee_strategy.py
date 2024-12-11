@@ -8,14 +8,14 @@ class EmployeeStrategy(UserStrategy):
     def post(self, request):
         return Response({"detail": "Employees cannot create other employees."}, status=status.HTTP_403_FORBIDDEN)
 
-    def get(self, request, pk=None):
+    def get(self, request, user_id=None):
         return Response({"detail": "Employees can only view their own profiles."}, status=status.HTTP_403_FORBIDDEN)
               
 
-    def put(self, request, pk):
+    def put(self, request, user_id):
         return Response({"detail": "Employees cannot update other employees."}, status=status.HTTP_403_FORBIDDEN)
 
-    def delete(self, request, pk):
+    def delete(self, request, user_id):
         return Response({"detail": "Employees cannot delete other employees."}, status=status.HTTP_403_FORBIDDEN)
 
 
