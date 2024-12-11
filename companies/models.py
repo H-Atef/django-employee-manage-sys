@@ -1,4 +1,5 @@
 from django.db import models
+# from django.db import connection
 
 class Company(models.Model):
     company = models.CharField(max_length=255,unique=True)
@@ -10,8 +11,21 @@ class Company(models.Model):
 
     @property
     def num_of_employess(self):
-        # This computes the total number of employees across all departments
-        return sum(department.num_of_employees for department in self.departments.all())
+
+        # # Clear the previous queries from the connection object
+        # connection.queries.clear()
+
+        departments = self.departments.prefetch_related('employees')
+        total_employees = sum(department.employees.count() for department in departments.all())
+
+        # # Print the queries executed during this method call
+        # print("SQL Queries:")
+        # for query in connection.queries:
+        #     print(query['sql'])
+
+        return total_employees
+    
+
     
     
 
