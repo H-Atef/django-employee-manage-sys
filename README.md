@@ -1,5 +1,7 @@
 # Django Employment Management System
 
+#### By Hesham Atef
+
 ## Overview
 
 The **Django Employment Management System** is a backend web application developed using Django and Django REST Framework (DRF) that aims to provide a comprehensive solution for managing employees, departments, companies, and onboarding applicants. The system is designed with role-based access control (RBAC) and secure authentication mechanisms, ensuring that different user roles (admin, manager, employee) have appropriate access levels.
