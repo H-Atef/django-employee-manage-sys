@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class WorkflowsConfig(AppConfig):
+class OnboardApplicantsWfsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'workflows'
+    name = 'onboard_applicants_wfs'

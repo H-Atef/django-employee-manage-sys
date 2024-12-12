@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'departments',
     'users',
     'employees',
-    'workflows'
+    'onboard_applicants_wfs'
 ]
 
 MIDDLEWARE = [

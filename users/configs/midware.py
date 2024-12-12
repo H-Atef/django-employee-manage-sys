@@ -6,7 +6,7 @@ class SetTokenInHeaderMiddleware:
         response = self.get_response(request)
 
         # Check if the response is from TokenObtainPairView
-        if request.path == '/user/login/' and response.status_code == 200:
+        if request.path == '/api/v1/user/login/' and response.status_code == 200:
             # Extract the token from the response content
             token = response.data.get('access', None)
             refresh_token = response.data.get('refresh', None)

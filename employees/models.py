@@ -18,7 +18,7 @@ STATUS_CHOICES = [
 class Employee(models.Model):
     company = models.ForeignKey(Company, related_name='employees', on_delete=models.CASCADE)
     department = models.ForeignKey(Department, related_name='employees', on_delete=models.CASCADE)
-    user=models.ForeignKey(UserInfo,related_name='employees', on_delete=models.CASCADE)
+    user=models.OneToOneField(UserInfo,related_name='employees', on_delete=models.CASCADE)
     email = models.EmailField(validators=[EmailValidator()],unique=True)
     status = models.CharField(max_length=15, choices=STATUS_CHOICES,default="Active")
     name = models.CharField(max_length=255,default="-")
@@ -42,5 +42,7 @@ class Employee(models.Model):
         # Ensure Department is related to the selected company
         if self.department.company != self.company:
             raise Exception("Department must belong to the selected company.")
+        
+        self.email=self.user.user.email
         
         super().save(*args, **kwargs)
