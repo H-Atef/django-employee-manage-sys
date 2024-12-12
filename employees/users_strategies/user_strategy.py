@@ -20,3 +20,7 @@ class UserStrategy(ABC):
     @abstractmethod
     def get_profile(self, request, user_id):
         pass
+
+    @abstractmethod
+    def complete_account_data(self, request):
+        pass

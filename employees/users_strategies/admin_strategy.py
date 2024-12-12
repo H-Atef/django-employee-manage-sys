@@ -69,13 +69,22 @@ class AdminStrategy(UserStrategy):
             return Response({"message": "Employee with this email already exists and their account is complete."}, 
                             status=status.HTTP_400_BAD_REQUEST)
         
-        # Check if user already exists in Employee model
-        if not Employee.objects.filter(email=email).exists():
+        signed_user=[]
+        try:
+            signed_user.append(User.objects.get(email=email).id)
+
+        except User.DoesNotExist:
+            signed_user.append("User Doesn't Exist")
+        
+
+        if signed_user[0]=="User Doesn't Exist":
             return Response({"message": "User does not exist. Please register the user first."}, 
-                            status=status.HTTP_400_BAD_REQUEST)
+                                status=status.HTTP_400_BAD_REQUEST)
+
 
         # Extract employee data from request
         employee_data = EmployeeHelper.extract_employee_data(request)
+        employee_data['user'] = signed_user[0]
 
         # Create or update employee with the incomplete data
         try:

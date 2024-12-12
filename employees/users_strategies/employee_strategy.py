@@ -21,3 +21,7 @@ class EmployeeStrategy(UserStrategy):
 
     def get_profile(self,request):
         return EmployeeHelper.get_profile(request)
+    
+    def complete_account_data(self, request):
+        return Response({"detail": "Employees Are Not Allowed to Complete their account without permission. "},
+                         status=status.HTTP_403_FORBIDDEN)

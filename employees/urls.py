@@ -8,4 +8,5 @@ urlpatterns = [
     path('delete-employee/<int:user_id>/', views.DeleteEmployeeAPIView.as_view(), name='delete-employee'),
     path('view-all-employees/', views.ListEmployeeAPIView.as_view(), name='list-employees'),
     path('view-profile/', views.EmployeeProfileAPIView.as_view(), name='view-employee-profile'),
+    path('complete-account-data/', views.CompleteAccountEmployeeAPIView.as_view(), name='complete-account-data'),
 ]

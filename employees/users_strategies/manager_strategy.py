@@ -14,26 +14,40 @@ class ManagerStrategy(UserStrategy):
         user_name = request.data.get("username", None)
         password = request.data.get("password", None)
 
-        # Ensure the manager is only managing employees of the same company
-        company = request.user.userinfo.company  # Assuming the manager's company is available in userinfo
-        
-        # Extract employee data from request
-        employee_data = EmployeeHelper.extract_employee_data(request)
-        
-        # Validate that the employee is being assigned to the correct company
-        if int(employee_data.get("company")) != company.id:
-            return Response({"message": "You can only create employees for your assigned company."}, 
-                            status=status.HTTP_400_BAD_REQUEST)
-
         # Check if the email already exists in Employee model
         if Employee.objects.filter(email=email).exists():
             return Response({"message": "Employee with this email already exists and their account is complete."}, 
                             status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Get the manager's employee record to confirm they exist and have a valid company
+            manager_employee = Employee.objects.get(user=request.user.id)
+
+            # Get the manager's company from the employee record
+            manager_company = manager_employee.company
+
+            manager_department=manager_employee.department
+
+        except Employee.DoesNotExist:
+            # If the manager has incomplete account
+            return Response({"message": "Manager account is incomplete or not assigned to a company."}, 
+                            status=status.HTTP_400_BAD_REQUEST)
         
+
+         
         # Check if the user already exists in the User model
         if EmployeeHelper.check_if_user_exists(email):
             return Response({"message": "User already exists. Please use the complete account data method if you need to update the data."}, 
                             status=status.HTTP_400_BAD_REQUEST)
+
+        
+        
+        # Extract employee data from request
+        employee_data = EmployeeHelper.extract_employee_data(request)
+
+        employee_data["department"]=manager_department.id
+        employee_data["company"]=manager_company.id
+        
         
         # If the user doesn't exist, create the user and employee
         return self.create_new_user_and_employee(user_name, password, email, employee_data, request)
@@ -69,17 +83,59 @@ class ManagerStrategy(UserStrategy):
 
     def complete_account_data(self, request):
         """Handle incomplete accounts data for existing users"""
-        email = request.data.get("email")
 
-     
+        #Assigned User Email
+        email = request.data.get("email",None)
+
+        if not email:
+            email=request.user.email
+
+        try:
+            # Get the manager's employee record to confirm they exist and have a valid company
+            manager_employee = Employee.objects.get(user=request.user.id)
+
+            # Get the manager's company from the employee record
+            manager_company = manager_employee.company
+
+            manager_department=manager_employee.department
+
+        except Employee.DoesNotExist:
+            # If the manager has incomplete account
+            return Response({"message": "Manager account is incomplete or not assigned to a company."}, 
+                            status=status.HTTP_400_BAD_REQUEST)
+
 
         # Check if the email already exists in Employee model
         if Employee.objects.filter(email=email).exists():
             return Response({"message": "Employee with this email already exists and their account is complete."}, 
                             status=status.HTTP_400_BAD_REQUEST)
         
+        #Check If the entered user is a registered user and has a manager role by checking email
+        #Managers cannot compelete accounts for managers.
+        signed_user=[]
+        try:
+            signed_user.append(User.objects.get(email=email).userinfo)
+
+        except User.DoesNotExist:
+            signed_user.append({"role":"User Doesn't Exist"})
+
+        if signed_user[0].role=="Manager" and email!=request.user.email:
+            return Response({"message": "You cannot complete another manager's account."}, 
+                                status=status.HTTP_400_BAD_REQUEST)
+        
+
+        if signed_user[0].role=="User Doesn't Exist":
+            return Response({"message": "User does not exist. Please register the user first."}, 
+                                status=status.HTTP_400_BAD_REQUEST)
+        
+        
         # Extract employee data from request
         employee_data = EmployeeHelper.extract_employee_data(request)
+
+        employee_data["department"]=manager_department.id
+        employee_data["company"]=manager_company.id
+        employee_data["user"]=signed_user[0].user.id
+
 
         # Create or update employee with the incomplete data
         try:
@@ -145,8 +201,8 @@ class ManagerStrategy(UserStrategy):
             company = manager_employee.company
 
         except Employee.DoesNotExist:
-            # If the manager does not exist or is incomplete
-            return Response({"message": "Manager account is incomplete or does not exist."}, 
+            # If the manager has incomplete account
+            return Response({"message": "Manager account is incomplete or or not assigned to a company."}, 
                             status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -202,8 +258,8 @@ class ManagerStrategy(UserStrategy):
             company = manager_employee.company
 
         except Employee.DoesNotExist:
-            # If the manager does not exist or is incomplete
-            return Response({"message": "Manager account is incomplete or does not exist."}, 
+            # If the manager has incomplete account
+            return Response({"message": "Manager account is incomplete or not assigned to a company."}, 
                             status=status.HTTP_400_BAD_REQUEST)
         
         try:

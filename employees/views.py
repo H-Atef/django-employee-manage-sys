@@ -16,6 +16,19 @@ class CreateEmployeeAPIView(APIView):
             return strategy.post(request)
         else:
             return Response({"detail": "Permission Denied."}, status=status.HTTP_403_FORBIDDEN)
+        
+class CompleteAccountEmployeeAPIView(APIView):
+    authentication_classes = [CustomJWTAuthentication]
+
+    def post(self, request):
+        user_role = request.user.userinfo.role
+        role_context = RoleContext(user_role)
+        strategy = role_context.get_strategy()
+
+        if strategy:
+            return strategy.complete_account_data(request)
+        else:
+            return Response({"detail": "Permission Denied."}, status=status.HTTP_403_FORBIDDEN)
 
 class RetrieveEmployeeAPIView(APIView):
     authentication_classes = [CustomJWTAuthentication]
